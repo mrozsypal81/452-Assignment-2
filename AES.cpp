@@ -29,21 +29,29 @@ bool AES::setKey(const unsigned char* keyArray)
 	// For documentation, please see https://boringssl.googlesource.com/boringssl/+/2623/include/openssl/aes.h
 	// and aes.cpp example provided with the assignment.
 	
-	if(keyArray[0] == '0x00')
+	if(keyArray[0] == '0')
 	{
-		if(AES_set_encrypt_key(keyArray, 128, &this->enc_key)!=0)
+		if(AES_set_encrypt_key(keyArray+1, 128, &this->enc_key)!=0)
 		{
 			cout << "Fail to set Encryption key";
 			return false;
 		}
-
+		else
+		{
+			cout <<"Encryption key set." << endl;
+		}
+		
 	}
 	else
 	{
-		if(AES_set_decrypt_key(keyArray, 128, &this->dec_key) != 0)
+		if(AES_set_decrypt_key(keyArray+1, 128, &this->dec_key) != 0)
 		{
 			cout << "Fail to set Decryption key";
 			return true;
+		}
+		else
+		{
+			cout <<"Decryption key set." << endl;
 		}
 	}
 	
@@ -62,12 +70,13 @@ unsigned char* AES::encrypt(const unsigned char* plainText)
 	//TODO: 1. Dynamically allocate a block to store the ciphertext.
 
 		unsigned char* ciphertext = new unsigned char[17];
-		memset(ciphertext,0,17);
+		
 
 	//	2. Use AES_ecb_encrypt(...) to encrypt the text (please see the URL in setKey(...)
 	//	and the aes.cpp example provided.
-
+		cout <<"Begin encryption" << endl;
 		AES_ecb_encrypt(plainText, ciphertext, &this->enc_key, AES_ENCRYPT);
+		cout <<"Successful encryption" << endl;
 
 	// 	3. Return the pointer to the ciphertext
 		
@@ -85,13 +94,13 @@ unsigned char* AES::decrypt(const unsigned char* cipherText)
 	//TODO: 1. Dynamically allocate a block to store the plaintext.
 
 		unsigned char* plaintext = new unsigned char[17];
-		memset(plaintext,0,17);
+		
 
 	//	2. Use AES_ecb_encrypt(...) to decrypt the text (please see the URL in setKey(...)
 	//	and the aes.cpp example provided.
-
+		cout <<"Begin decryption" << endl;
 		AES_ecb_encrypt(cipherText, plaintext, &this->dec_key, AES_DECRYPT);
-
+		cout <<"Successful decryption" << endl;
 	// 	3. Return the pointer to the plaintext
 		
 	return plaintext;

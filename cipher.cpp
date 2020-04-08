@@ -16,10 +16,10 @@ int main(int argc, char** argv)
 	 * NOTE: due to the incomplete skeleton, the code may crash or
 	 * misbehave.
 	 */
-	/*
+	
 	//cipher name
 	string cipherName = argv[1];
-
+	/*
 	//key
 	string keyInput = argv[2];
 
@@ -31,10 +31,10 @@ int main(int argc, char** argv)
 
 	//output file
 	string outputFile = argv[5];
-
+	*/
 	//DES cipher
 	if(cipherName == "DES")
-	{*/
+	{
 	
 	/* Create an instance of the DES cipher */	
 	CipherInterface* cipher = new DES(); 
@@ -57,26 +57,54 @@ int main(int argc, char** argv)
 	
 	/* Perform encryption */
 	const unsigned char* cipherText = {cipher->encrypt((unsigned char*)"aaaabbbb")};
+
+	cout <<"The cipher text is " << cipherText << endl;
 	
 	/* Perform decryption */
 	cout<< cipher->decrypt(cipherText) << endl;
 	
 	return 0;
 	
-	/*}
+	}
 	
 	//AES cipher
-	else if(argv[1] == "AES")
+	else if(cipherName == "AES")
 	{
 		// Create an instance of the AES cipher 	
 		CipherInterface* cipher = new AES(); 
 
+		/* Error checks */
+		if(!cipher)
+		{
+			fprintf(stderr, "ERROR [%s %s %d]: could not allocate memory\n",	
+			__FILE__, __FUNCTION__, __LINE__);
+			exit(-1);
+		}
+
+		//set encryption key
+		cout <<"Setting key." << endl;
+		cipher->setKey((unsigned char*)"000112233445566778899aabbccddeeff");
+		cout<<"Successfully set key." << endl;
+
+		//perform encryption
+		
+		unsigned char* ciphertext = cipher->encrypt((unsigned char*)"helloworld123456");
+		cout << "Ciphertext: " << ciphertext << endl;
+
+		//set decryption key
+		cout <<"Setting key." << endl;
+		cipher->setKey((unsigned char*)"100112233445566778899aabbccddeeff");
+		cout<<"Successfully set key." << endl;
+
+		//perform decryption
+		
+		cout << "Plaintext: " << cipher->decrypt(ciphertext) << endl;
 		return 0;
 	}
 	else
 	{
-		cout << argv[1] << " is not a valid type of cipher" << endl;
+		cout << cipherName << " is not a valid type of cipher" << endl;
 		return 0;
 	}
-	*/
+	
 }

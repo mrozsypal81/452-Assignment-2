@@ -3,8 +3,12 @@
 #include "CipherInterface.h"
 #include "DES.h"
 #include "AES.h"
+#include <fstream>
 
 using namespace std;
+
+static void appendLineToFile(string filepath, string line);
+void AES_DES (string userinput,string cipherName,string keyInput,string functype,string inputFile,string outputFile);
 
 int main(int argc, char** argv)
 {
@@ -17,53 +21,96 @@ int main(int argc, char** argv)
 	 * misbehave.
 	 */
 	
+	string userinput;
+
 	//cipher name
 	string cipherName = argv[1];
-	/*
 	//key
 	string keyInput = argv[2];
-
 	//ENC or DEC
 	string functype = argv[3];
-
 	// input file
 	string inputFile = argv[4];
-
 	//output file
 	string outputFile = argv[5];
-	*/
+
+	ifstream infile;
+	infile.open(inputFile);
+	char singleChar;
+
+	while(infile >> singleChar){
+		userinput += singleChar;
+		if(userinput.length() == 8 && cipherName == "DES"){
+			AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
+			userinput = "";
+		}
+		if(userinput.length() == 16 && cipherName == "AES"){
+			AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
+			userinput = "";
+		}
+	}
+
+	// Padding for short blocks
+	if(userinput.length() != 0 && cipherName == "DES"){
+		int padlength = 8-userinput.length();
+		while(padlength != 0){
+			padlength--;
+			userinput += 'X';
+		}
+		AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
+	}
+	if(userinput.length() != 0 && cipherName == "AES"){
+		int padlength = 16-userinput.length();
+		while(padlength != 0){
+			padlength--;
+			userinput += 'X';
+		}
+		AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
+	}
+
+	return 0;
+}
+
+void AES_DES (string userinput,string cipherName,string keyInput,string functype,string inputFile,string outputFile)
+{
 	//DES cipher
 	if(cipherName == "DES")
 	{
-	
-	/* Create an instance of the DES cipher */	
-	CipherInterface* cipher = new DES(); 
 		
-	/* Error checks */
-	if(!cipher)
-	{
-		fprintf(stderr, "ERROR [%s %s %d]: could not allocate memory\n",	
-		__FILE__, __FUNCTION__, __LINE__);
-		exit(-1);
-	}
-	
-	/* Set the encryption key
-	 * A valid key comprises 16 hexidecimal
-	 * characters. Below is one example.
-	 * Your program should take input from
-	 * command line.
-	 */
-	cipher->setKey((unsigned char*)"0123456789abcdef");
-	
-	/* Perform encryption */
-	const unsigned char* cipherText = {cipher->encrypt((unsigned char*)"aaaabbbb")};
 
-	cout <<"The cipher text is " << cipherText << endl;
-	
-	/* Perform decryption */
-	cout<< cipher->decrypt(cipherText) << endl;
-	
-	return 0;
+		/* Create an instance of the DES cipher */	
+		CipherInterface* cipher = new DES(); 
+			
+		/* Error checks */
+		if(!cipher)
+		{
+			fprintf(stderr, "ERROR [%s %s %d]: could not allocate memory\n",	
+			__FILE__, __FUNCTION__, __LINE__);
+			exit(-1);
+		}
+		
+		/* Set the encryption key
+		* A valid key comprises 16 hexidecimal
+		* characters. Below is one example.
+		* Your program should take input from
+		* command line.
+		*/
+		cipher->setKey((unsigned char*)keyInput.c_str());
+		
+		/* Perform encryption */
+		if(functype == "ENC")
+		{
+			unsigned char* cipherText = {cipher->encrypt((unsigned char*)userinput.c_str())};
+			appendLineToFile(inputFile, cipherText);
+		}
+		if(functype == "DEC")
+		{
+		/* Perform decryption */
+		const unsigned char* userinputTemp = reinterpret_cast<const unsigned char*>(userinput.c_str());
+		unsigned char* plaintext;
+		plaintext = cipher->decrypt(userinputTemp);
+		appendLineToFile(outputFile, plaintext);
+		}
 	
 	}
 	
@@ -81,30 +128,45 @@ int main(int argc, char** argv)
 			exit(-1);
 		}
 
+		if(functype == "ENC")
+		{
 		//set encryption key
 		cout <<"Setting key." << endl;
-		cipher->setKey((unsigned char*)"000112233445566778899aabbccddeeff");
+		cipher->setKey((unsigned char*)keyInput.c_str());
 		cout<<"Successfully set key." << endl;
 
 		//perform encryption
 		
-		unsigned char* ciphertext = cipher->encrypt((unsigned char*)"helloworld123456");
-		cout << "Ciphertext: " << ciphertext << endl;
-
+		unsigned char* ciphertext = cipher->encrypt((unsigned char*)userinput.c_str());
+		appendLineToFile(inputFile, ciphertext);
+		}
+		if(functype == "DEC")
+		{
 		//set decryption key
-		cout <<"Setting key." << endl;
-		cipher->setKey((unsigned char*)"100112233445566778899aabbccddeeff");
-		cout<<"Successfully set key." << endl;
+		cipher->setKey((unsigned char*)keyInput.c_str());
 
 		//perform decryption
-		
-		cout << "Plaintext: " << cipher->decrypt(ciphertext) << endl;
-		return 0;
+		const unsigned char* userinputTemp = reinterpret_cast<const unsigned char*>(userinput.c_str());
+		unsigned char* plaintext;
+		plaintext = cipher->decrypt(userinputTemp);
+		appendLineToFile(outputFile, plaintext);
+		}
 	}
 	else
 	{
 		cout << cipherName << " is not a valid type of cipher" << endl;
-		return 0;
 	}
-	
+}
+
+static void appendLineToFile(string outputfile, unsigned char* output)
+{
+    ofstream file;
+    file.open(outputfile, std::ios::out | std::ios::app);
+    if (file.fail())
+        throw std::ios_base::failure(strerror(errno));
+
+    //make sure write fails with exception if something is wrong
+    file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
+
+    file << output;
 }

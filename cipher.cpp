@@ -7,7 +7,9 @@
 
 using namespace std;
 
-static void appendLineToFile(string filepath, unsigned char* output);
+
+
+static void appendLineToFile(string filepath, string output);
 void AES_DES (string userinput,string cipherName,string keyInput,string functype,string inputFile,string outputFile);
 
 int main(int argc, char** argv)
@@ -35,7 +37,7 @@ int main(int argc, char** argv)
 	string outputFile = argv[5];
 
 	ifstream infile;
-	infile.open(inputFile);
+	infile.open(inputFile.c_str());
 	char singleChar;
 
 	while(infile >> singleChar){
@@ -101,7 +103,8 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		if(functype == "ENC")
 		{
 			unsigned char* cipherText = {cipher->encrypt((unsigned char*)userinput.c_str())};
-			appendLineToFile(inputFile, cipherText);
+			string encOutput = (reinterpret_cast<char*>(cipherText));
+			appendLineToFile(outputFile, encOutput);
 		}
 		if(functype == "DEC")
 		{
@@ -109,7 +112,8 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		const unsigned char* userinputTemp = reinterpret_cast<const unsigned char*>(userinput.c_str());
 		unsigned char* plaintext;
 		plaintext = cipher->decrypt(userinputTemp);
-		appendLineToFile(outputFile, plaintext);
+		string decOutput = (reinterpret_cast<char*>(plaintext));
+		appendLineToFile(outputFile, decOutput);
 		}
 	
 	}
@@ -138,7 +142,8 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		//perform encryption
 		
 		unsigned char* ciphertext = cipher->encrypt((unsigned char*)userinput.c_str());
-		appendLineToFile(inputFile, ciphertext);
+		string encOutput = (reinterpret_cast<char*>(ciphertext));
+		appendLineToFile(outputFile, encOutput);
 		}
 		if(functype == "DEC")
 		{
@@ -149,24 +154,27 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		const unsigned char* userinputTemp = reinterpret_cast<const unsigned char*>(userinput.c_str());
 		unsigned char* plaintext;
 		plaintext = cipher->decrypt(userinputTemp);
-		appendLineToFile(outputFile, plaintext);
+		string decOutput = (reinterpret_cast<char*>(plaintext));
+		appendLineToFile(outputFile, decOutput);
 		}
 	}
 	else
 	{
 		cout << cipherName << " is not a valid type of cipher" << endl;
 	}
+	
 }
 
-static void appendLineToFile(string outputfile, unsigned char* output)
+static void appendLineToFile(string outputfile, string output)
 {
     ofstream file;
-    file.open(outputfile, std::ios::out | std::ios::app);
-    if (file.fail())
-        throw std::ios_base::failure(strerror(errno));
+    file.open(outputfile.c_str(), std::ios_base::app);
+    //if (file.fail())
+    //    throw std::ios_base::failure(strerror(errno));
 
     //make sure write fails with exception if something is wrong
-    file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
+    //file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
 
     file << output;
+	file.close();
 }

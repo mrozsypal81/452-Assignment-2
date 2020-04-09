@@ -7,7 +7,7 @@
 
 using namespace std;
 
-static void appendLineToFile(string filepath, string line);
+static void appendLineToFile(string filepath, unsigned char* output);
 void AES_DES (string userinput,string cipherName,string keyInput,string functype,string inputFile,string outputFile);
 
 int main(int argc, char** argv)

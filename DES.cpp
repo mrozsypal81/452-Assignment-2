@@ -44,14 +44,14 @@ bool DES::setKey(const unsigned char* keyArray)
 		++desKeyIndex;
 	}
 	
-	fprintf(stdout, "DES KEY: ");
+	//fprintf(stdout, "DES KEY: ");
 	
-	/* Print the key */
+	/* Print the key 
 	for(keyIndex = 0; keyIndex < 8; ++keyIndex)
 		fprintf(stdout, "%x", this->des_key[keyIndex]);
 	
 	fprintf(stdout, "\n");	
-	
+	*/
 	
 	/* Set the encryption key */
 	if ((keyErrorCode = des_set_key_checked(&des_key, this->key)) != 0)

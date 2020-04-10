@@ -30,8 +30,12 @@ bool AES::setKey(const unsigned char* keyArray)
 	// and aes.cpp example provided with the assignment.
 	
 	if(keyArray[0] == '0')
-	{
-		if(AES_set_encrypt_key(keyArray+1, 128, &this->enc_key)!=0)
+	{	
+		cout << "setting Encryption key" << endl;
+		const unsigned char* keyArraytest;
+		keyArraytest = keyArray+1;
+		cout << keyArraytest << endl;
+		if(AES_set_encrypt_key(keyArraytest, 128, &this->enc_key)!=0)
 		{
 			cout << "Fail to set Encryption key";
 			return false;
@@ -39,10 +43,15 @@ bool AES::setKey(const unsigned char* keyArray)
 	}
 	else
 	{
-		if(AES_set_decrypt_key(keyArray+1, 128, &this->dec_key) != 0)
+		cout << "setting decryption key" << endl;
+		const unsigned char* keyArraytest;
+		keyArraytest = keyArray+1;
+		cout << keyArraytest << endl;
+		
+		if(AES_set_decrypt_key(keyArraytest, 128, &this->dec_key) != 0)
 		{
 			cout << "Fail to set Decryption key";
-			return true;
+			return false;
 		}
 	}
 	
@@ -61,6 +70,7 @@ unsigned char* AES::encrypt(const unsigned char* plainText)
 	//TODO: 1. Dynamically allocate a block to store the ciphertext.
 
 		unsigned char* ciphertext = new unsigned char[16];
+		memset(ciphertext,0,16);
 		
 
 	//	2. Use AES_ecb_encrypt(...) to encrypt the text (please see the URL in setKey(...)
@@ -86,6 +96,7 @@ unsigned char* AES::decrypt(const unsigned char* cipherText)
 	//TODO: 1. Dynamically allocate a block to store the plaintext.
 
 		unsigned char* plaintext = new unsigned char[16];
+		memset(plaintext,0,16);
 		
 
 	//	2. Use AES_ecb_encrypt(...) to decrypt the text (please see the URL in setKey(...)
@@ -94,5 +105,7 @@ unsigned char* AES::decrypt(const unsigned char* cipherText)
 		AES_ecb_encrypt(cipherText, plaintext, &this->dec_key, AES_DECRYPT);
 		cout <<"Successful decryption" << endl;
 	// 	3. Return the pointer to the plaintext
+	cout << "plaintext" << endl;
+	cout << plaintext << endl;
 	return plaintext;
 }

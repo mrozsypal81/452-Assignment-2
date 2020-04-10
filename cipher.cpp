@@ -40,9 +40,9 @@ int main(int argc, char** argv)
 	infile.open(inputFile.c_str());
 	char singleChar;
 
-	while(infile >> singleChar){
+	while(infile >> noskipws >> singleChar){
 		userinput += singleChar;
-		//cout << singleChar << endl;
+		cout << singleChar << endl;
 		if(userinput.length() == 8 && cipherName == "DES"){
 			AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
 			//cout << userinput << endl;
@@ -51,6 +51,7 @@ int main(int argc, char** argv)
 		if(userinput.length() == 16 && cipherName == "AES"){
 			AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
 			userinput = "";
+			cout << userinput << endl;
 		}
 	}
 
@@ -67,11 +68,14 @@ int main(int argc, char** argv)
 		AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
 	}
 	if(userinput.length() != 0 && cipherName == "AES"){
+		cout << "Inside Pad if" << endl;
+		cout << userinput.length() << endl;
 		int padlength = 16-userinput.length();
 		while(padlength != 0){
 			padlength--;
 			userinput += '0';
 		}
+		cout << userinput << endl;
 		AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
 	}
 
@@ -154,6 +158,8 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 
 		//perform encryption
 		
+		cout << "userinput inside AES ENC" << endl;
+		cout << userinput << endl;
 		unsigned char* ciphertext = cipher->encrypt((unsigned char*)userinput.c_str());
 		string encOutput = (reinterpret_cast<char*>(ciphertext));
 		appendLineToFile(outputFile, encOutput);
@@ -167,6 +173,8 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		const unsigned char* userinputTemp = reinterpret_cast<const unsigned char*>(userinput.c_str());
 		unsigned char* plaintext;
 		plaintext = cipher->decrypt(userinputTemp);
+		cout << "plaintext in after DEC" << endl;
+		cout << plaintext << endl;
 		string decOutput = (reinterpret_cast<char*>(plaintext));
 		appendLineToFile(outputFile, decOutput);
 		}
@@ -187,12 +195,11 @@ static void appendLineToFile(string outputfile, string output)
 
     //make sure write fails with exception if something is wrong
     //file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
-	int i = 0;
-	//cout << "output.length" << endl;
-	//cout << output.length() << endl;
-	while(i < output.length()){
-		i++;
+
+	cout << "output.length" << endl;
+	cout << output.length() << endl;
+
 		file << output;
 		file.close();
-	}
+	
 }

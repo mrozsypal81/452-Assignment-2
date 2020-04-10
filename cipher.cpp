@@ -42,8 +42,10 @@ int main(int argc, char** argv)
 
 	while(infile >> singleChar){
 		userinput += singleChar;
+		//cout << singleChar << endl;
 		if(userinput.length() == 8 && cipherName == "DES"){
 			AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
+			//cout << userinput << endl;
 			userinput = "";
 		}
 		if(userinput.length() == 16 && cipherName == "AES"){
@@ -54,18 +56,21 @@ int main(int argc, char** argv)
 
 	// Padding for short blocks
 	if(userinput.length() != 0 && cipherName == "DES"){
+		//cout << "Inside Pad if" << endl;
+		//cout << userinput.length() << endl;
 		int padlength = 8-userinput.length();
 		while(padlength != 0){
 			padlength--;
-			userinput += 'X';
+			userinput += '0';
 		}
+		//cout << userinput << endl;
 		AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
 	}
 	if(userinput.length() != 0 && cipherName == "AES"){
 		int padlength = 16-userinput.length();
 		while(padlength != 0){
 			padlength--;
-			userinput += 'X';
+			userinput += '0';
 		}
 		AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
 	}
@@ -102,7 +107,9 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		/* Perform encryption */
 		if(functype == "ENC")
 		{
+			//cout << userinput << endl;
 			unsigned char* cipherText = {cipher->encrypt((unsigned char*)userinput.c_str())};
+			//cout << cipherText << endl;
 			string encOutput = (reinterpret_cast<char*>(cipherText));
 			appendLineToFile(outputFile, encOutput);
 		}
@@ -110,9 +117,15 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		{
 		/* Perform decryption */
 		const unsigned char* userinputTemp = reinterpret_cast<const unsigned char*>(userinput.c_str());
+		//cout << "user input " << endl;
+		//cout << userinput << endl;
 		unsigned char* plaintext;
+		//cout << "plaintext " << endl;
+		//cout << plaintext << endl;
 		plaintext = cipher->decrypt(userinputTemp);
 		string decOutput = (reinterpret_cast<char*>(plaintext));
+		//cout << "decOutput " << endl;
+		//cout << decOutput << endl;
 		appendLineToFile(outputFile, decOutput);
 		}
 	
@@ -135,9 +148,9 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		if(functype == "ENC")
 		{
 		//set encryption key
-		cout <<"Setting key." << endl;
+		//cout <<"Setting key." << endl;
 		cipher->setKey((unsigned char*)keyInput.c_str());
-		cout<<"Successfully set key." << endl;
+		//cout<<"Successfully set key." << endl;
 
 		//perform encryption
 		
@@ -174,7 +187,12 @@ static void appendLineToFile(string outputfile, string output)
 
     //make sure write fails with exception if something is wrong
     //file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
-
-    file << output;
-	file.close();
+	int i = 0;
+	//cout << "output.length" << endl;
+	//cout << output.length() << endl;
+	while(i < output.length()){
+		i++;
+		file << output;
+		file.close();
+	}
 }

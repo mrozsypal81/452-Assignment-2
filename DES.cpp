@@ -47,10 +47,10 @@ bool DES::setKey(const unsigned char* keyArray)
 	//fprintf(stdout, "DES KEY: ");
 	
 	/* Print the key */
-	/*for(keyIndex = 0; keyIndex < 8; ++keyIndex)
+	for(keyIndex = 0; keyIndex < 8; ++keyIndex)
 		fprintf(stdout, "%x", this->des_key[keyIndex]);
 	
-	fprintf(stdout, "\n");	*/
+	fprintf(stdout, "\n");	
 	
 	
 	/* Set the encryption key */
@@ -106,7 +106,7 @@ unsigned char* DES::encrypt(const unsigned char* plaintext)
 
         unsigned char* bytes = new unsigned char[8];
         
-        
+        //cout << "ciphertext[i]" << endl;
         for(int i = 0; i < 8; i++)
         {
             bytes[i] = ciphertext[i]; 

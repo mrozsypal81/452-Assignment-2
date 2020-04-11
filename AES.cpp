@@ -36,27 +36,52 @@ bool AES::setKey(const unsigned char* keyArray)
 	
 	/* The AES key index */
 	int AESKeyIndex = 0;
-		
-	/* Go through the entire key character by character */
-	cout << "Going into chartohex func" << endl;
-	while(AESKeyIndex != 16)
-	{
-		/* Convert the key if the character is valid */
-		if((this->AES_key[AESKeyIndex] = twoCharToHexByte(keyArray + keyIndex)) == 'z'){
-			cout << "key value is false" << endl;
-			return false;
+
+
+	// This is to account for the encryption 00 that is added before in cipher.cpp
+	int s = strlen((char*)keyArray);
+	cout << "array length" << endl;
+	cout << s << endl;
+
+	if (s == 34){
+			/* Go through the entire key character by character */
+		cout << "Going into chartohex func enc" << endl;
+		while(AESKeyIndex != 16)
+		{
+			/* Convert the key if the character is valid */
+			if((this->AES_key[AESKeyIndex] = twoCharToHexByte(keyArray + keyIndex+2)) == 'z'){
+				cout << "key value is false" << endl;
+				return false;
+			}
+			/* Go to the second pair of characters */
+			keyIndex += 2;	
+			
+			/* Increment the index */
+			++AESKeyIndex;
 		}
-		/* Go to the second pair of characters */
-		keyIndex += 2;	
-		
-		/* Increment the index */
-		++AESKeyIndex;
+	}
+	else{
+		/* Go through the entire key character by character */
+		cout << "Going into chartohex func dec" << endl;
+		while(AESKeyIndex != 16)
+		{
+			/* Convert the key if the character is valid */
+			if((this->AES_key[AESKeyIndex] = twoCharToHexByte(keyArray + keyIndex)) == 'z'){
+				cout << "key value is false" << endl;
+				return false;
+			}
+			/* Go to the second pair of characters */
+			keyIndex += 2;	
+			
+			/* Increment the index */
+			++AESKeyIndex;
+		}
 	}
 	
 
 	cout << "This->AES_key" << endl;
-	cout << this->AES_key << endl;
-	if(keyArray[0] == '0')
+	cout << keyArray << endl;
+	if(s == 34)
 	{	
 		cout << "setting Encryption key" << endl;
 		if(AES_set_encrypt_key(this->AES_key, 128, &this->enc_key)!=0)
@@ -142,20 +167,20 @@ unsigned char charToHex(const char& character)
 	/* Is the first digit 0-9 ? */	
 	if(character >= '0' && character <= '9'){	
 		/* Convert the character to hex */
-		cout << "convert the char to hex" << endl;
+		//cout << "convert the char to hex" << endl;
 		return character - '0';
 	}
 	/* It the first digit a letter 'a' - 'f'? */
 	else if(character >= 'a' && character <= 'f'){
 		/* Conver the cgaracter to hex */
-		cout << "convert the cgaracter to hex" << endl;
+		//cout << "convert the cgaracter to hex" << endl;
 		return (character - 97) + 10;
 	}
 			
 	/* Invalid character */
 	
 	else {
-		cout << "invalid char" << endl;
+		//cout << "invalid char" << endl;
 		return 'z';
 	}
 }
@@ -183,7 +208,7 @@ unsigned char twoCharToHexByte(const unsigned char* twoChars)
 	if((singleByte = charToHex(twoChars[0])) == 'z') 
 	{
 		/* Invalid digit */
-		cout << "invalid digit" << endl;
+		//cout << "invalid digit" << endl;
 		return 'z';
 	}
 	
@@ -194,11 +219,11 @@ unsigned char twoCharToHexByte(const unsigned char* twoChars)
 	
 	/* Conver the second character */
 	if((secondChar = charToHex(twoChars[1])) == 'z'){
-		cout << "convert second char" << endl;
+		//cout << "convert second char" << endl;
 		return 'z'; 
 	}
 	/* Insert the second value into the lower nibble */	
 	singleByte |= secondChar;
-
+	cout << "returning the hex byte" << endl;
 	return singleByte;
 }

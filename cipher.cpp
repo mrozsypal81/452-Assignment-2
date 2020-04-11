@@ -36,6 +36,14 @@ int main(int argc, char** argv)
 	//output file
 	string outputFile = argv[5];
 
+	//For handling if AES is for encrypt or decrypt
+	// This sets the key to be encrypt ahead of time
+	if(cipherName == "AES" && functype == "ENC"){
+		string zerozero = "00";
+		keyInput = zerozero + keyInput;
+	}
+
+
 	ifstream infile;
 	infile.open(inputFile.c_str());
 	char singleChar;

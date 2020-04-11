@@ -3,9 +3,11 @@
 #include "AES.h"
 
 using namespace std;
+unsigned char twoCharToHexByte(const unsigned char* twoChars);
+unsigned char charToHex(const char& character);
 /**
  * Sets the key to use
- * @param key - the first byte of this represents whether
+ * @param key - the first byte of this represents whetherm
  * to encrypt or to decrypt. 00 means encrypt and any other
  * value to decrypt.  Then come the bytes of the 128-bit key
  * (should be 16 of them).
@@ -29,13 +31,35 @@ bool AES::setKey(const unsigned char* keyArray)
 	// For documentation, please see https://boringssl.googlesource.com/boringssl/+/2623/include/openssl/aes.h
 	// and aes.cpp example provided with the assignment.
 	
+	/* The key index */
+	int keyIndex = 0;
+	
+	/* The AES key index */
+	int AESKeyIndex = 0;
+		
+	/* Go through the entire key character by character */
+	cout << "Going into chartohex func" << endl;
+	while(AESKeyIndex != 17)
+	{
+		/* Convert the key if the character is valid */
+		if((this->AES_key[AESKeyIndex] = twoCharToHexByte(keyArray + keyIndex)) == 'z')
+			cout << "key value is false" << endl;
+			return false;
+		
+		/* Go to the second pair of characters */
+		keyIndex += 2;	
+		
+		/* Increment the index */
+		++AESKeyIndex;
+	}
+	
+
+	cout << "This->AES_key" << endl;
+	cout << this->AES_key << endl;
 	if(keyArray[0] == '0')
 	{	
 		cout << "setting Encryption key" << endl;
-		const unsigned char* keyArraytest;
-		keyArraytest = keyArray+1;
-		cout << keyArraytest << endl;
-		if(AES_set_encrypt_key(keyArraytest, 128, &this->enc_key)!=0)
+		if(AES_set_encrypt_key(this->AES_key, 128, &this->enc_key)!=0)
 		{
 			cout << "Fail to set Encryption key";
 			return false;
@@ -44,11 +68,8 @@ bool AES::setKey(const unsigned char* keyArray)
 	else
 	{
 		cout << "setting decryption key" << endl;
-		const unsigned char* keyArraytest;
-		keyArraytest = keyArray+1;
-		cout << keyArraytest << endl;
 		
-		if(AES_set_decrypt_key(keyArraytest, 128, &this->dec_key) != 0)
+		if(AES_set_decrypt_key(this->AES_key, 128, &this->dec_key) != 0)
 		{
 			cout << "Fail to set Decryption key";
 			return false;
@@ -108,4 +129,76 @@ unsigned char* AES::decrypt(const unsigned char* cipherText)
 	cout << "plaintext" << endl;
 	cout << plaintext << endl;
 	return plaintext;
+}
+
+
+/**
+ * Converts a character into a hexidecimal integer
+ * @param character - the character to convert
+ * @return - the converted character, or 'z' on error
+ */
+unsigned char charToHex(const char& character)
+{
+	/* Is the first digit 0-9 ? */	
+	if(character >= '0' && character <= '9'){	
+		/* Convert the character to hex */
+		cout << "conver the char to hex" << endl;
+		return character - '0';
+	}
+	/* It the first digit a letter 'a' - 'f'? */
+	else if(character >= 'a' && character <= 'f'){
+		/* Conver the cgaracter to hex */
+		cout << "convert the cgaracter to hex" << endl;
+		return (character - 97) + 10;
+	}
+			
+	/* Invalid character */
+	
+	else {
+		cout << "invalid char" << endl;
+		return 'z';
+	}
+}
+
+/**
+ * Converts two characters into a hex integers
+ * and then inserts the integers into the higher
+ * and lower bits of the byte
+ * @param twoChars - two charcters representing the
+ * the hexidecimal nibbles of the byte.
+ * @param twoChars - the two characters
+ * @return - the byte containing having the
+ * valud of two characters e.g. string "ab"
+ * becomes hexidecimal integer 0xab.
+ */
+unsigned char twoCharToHexByte(const unsigned char* twoChars)
+{
+	/* The byte */
+	unsigned char singleByte;
+	
+	/* The second character */
+	unsigned char secondChar;
+
+	/* Convert the first character */
+	if((singleByte = charToHex(twoChars[0])) == 'z') 
+	{
+		/* Invalid digit */
+		cout << "invalid digit" << endl;
+		return 'z';
+	}
+	
+	/* Move the newly inserted nibble from the
+	 * lower to upper nibble.
+	 */
+	singleByte = (singleByte << 4);
+	
+	/* Conver the second character */
+	if((secondChar = charToHex(twoChars[1])) == 'z')
+		cout << "convert second char" << endl;
+		return 'z'; 
+	
+	/* Insert the second value into the lower nibble */	
+	singleByte |= secondChar;
+
+	return singleByte;
 }

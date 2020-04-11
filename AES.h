@@ -49,6 +49,9 @@ class AES: public CipherInterface
 	/* The protected members */
 	protected:
 
+
+		unsigned char AES_key[16];
+		
 		//TODO: declare the AES key
 		AES_KEY enc_key, dec_key;
 };

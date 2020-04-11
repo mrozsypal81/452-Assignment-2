@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 	infile.open(inputFile.c_str());
 	char singleChar;
 
-	while(infile >> noskipws >> singleChar){
+	while(infile.get(singleChar)){
 		userinput += singleChar;
 		cout << singleChar << endl;
 		if(userinput.length() == 8 && cipherName == "DES"){
@@ -195,9 +195,6 @@ static void appendLineToFile(string outputfile, string output)
 
     //make sure write fails with exception if something is wrong
     //file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
-
-	cout << "output.length" << endl;
-	cout << output.length() << endl;
 
 		file << output;
 		file.close();

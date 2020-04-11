@@ -36,18 +36,158 @@ int main(int argc, char** argv)
 	//output file
 	string outputFile = argv[5];
 
+	// Block size
+	int blockSize = -1;
+	
 	//For handling if AES is for encrypt or decrypt
 	// This sets the key to be encrypt ahead of time
-	if(cipherName == "AES" && functype == "ENC"){
-		string zerozero = "00";
-		keyInput = zerozero + keyInput;
+	//if(cipherName == "AES" && functype == "ENC"){
+	//	//string zerozero = "00";
+	//	keyInput = "00" + keyInput;
+	//}
+
+	// The cipher interface
+	CipherInterface* cipher = NULL;
+	
+	// We are doing DES
+	if(cipherName == "DES")
+	{
+		// Set the block size to 64 bits
+		blockSize = 8;
+		
+		cipher = new DES();
+
+		/* Error checks */
+		if(!cipher)
+		{
+			fprintf(stderr, "ERROR [%s %s %d]: could not allocate memory\n",	
+			__FILE__, __FUNCTION__, __LINE__);
+			exit(-1);
+		}
+		
+		/* Set the encryption key
+		* A valid key comprises 16 hexidecimal
+		* characters. Below is one example.
+		* Your program should take input from
+		* command line.
+		*/
+		cipher->setKey((unsigned char*)keyInput.c_str());
+
 	}
+	// We are doing AES
+	else 
+	{
+		blockSize = 16;
+		cipher = new AES();
+		
+		// Set the flag for encryption
+		if(functype == "ENC")
+			keyInput = "0" + keyInput;
+		// Set the flag for decryption
+		else keyInput = "1" + keyInput;
 
+		cipher->setKey((unsigned char*)keyInput.c_str());		
+		fprintf(stderr, "Set the AES key!");
+	}
+	
+	// Create a block
+	unsigned char block[blockSize];
+	
+	int numWritten = -1;
 
-	ifstream infile;
-	infile.open(inputFile.c_str());
+	
+	//ifstream infile;
+	//infile.open(inputFile.c_str());
+	
+	
+	
 	char singleChar;
 
+	// Open the file for reading
+	FILE* inFilePtr = fopen(inputFile.c_str(), "rb");
+	
+	
+	// Open the output file
+	FILE* outFilePtr = fopen(outputFile.c_str(), "wb");
+	
+	// The number of bytes read
+	int numBytesRead = -1;
+	
+	// The processed text
+	unsigned char* processedText = NULL;
+
+
+
+	
+
+
+
+	/* Create an instance of the DES cipher */	
+	// Sanity check!
+	if(!inFilePtr)
+	{
+		perror("fopen() for input file");
+		exit(-1);
+	}
+	
+
+	// Sanity check!
+	if(!outFilePtr)
+	{
+		perror("fopen for output file");
+		exit(-1);
+	}
+	
+	// Read the entire file
+	while(!feof(inFilePtr))
+	{
+		
+		// Read a block
+		numBytesRead = fread(block, 1, blockSize, inFilePtr);
+		
+		// Process any bytes if you have read them
+		if(numBytesRead != 0)
+		{
+			
+			// Encrypt
+			if(functype == "ENC")
+			{
+				// Padd the incomplete block
+				for(int i = numBytesRead; i < blockSize; i++){
+					block[i] = 'X';	
+				}
+				
+				processedText = cipher->encrypt((const unsigned char*)block);
+				
+					
+			}
+			// Do decrypt
+			else if(functype == "DEC")
+			{
+		//		fprintf(stderr, "Decrypt!");
+				processedText = cipher->decrypt((const unsigned char*)block);	
+		//		fprintf(stderr, "Dome!");
+			}
+			// Wrong mode
+			else
+			{
+				fprintf(stderr, "ERROR %s is an invalid mode!\n", functype.c_str());
+				exit(-1);
+			}			
+			
+			//fwrite
+			numWritten = fwrite(processedText, 1, blockSize, outFilePtr); 
+
+			// Make sure the write succeeded
+			if(numWritten != blockSize)
+			{
+				fprintf(stderr, "Could not save the output!\n");
+				exit(-1);
+			}
+		}
+	}
+		
+	/**
 	while(infile.get(singleChar)){
 		userinput += singleChar;
 		//cout << singleChar << endl;
@@ -61,8 +201,9 @@ int main(int argc, char** argv)
 			userinput = "";
 			//cout << userinput << endl;
 		}
+	
 	}
-
+/*
 	// Padding for short blocks
 	if(userinput.length() != 0 && cipherName == "DES"){
 		//cout << "Inside Pad if" << endl;
@@ -86,21 +227,21 @@ int main(int argc, char** argv)
 		//cout << userinput << endl;
 		AES_DES(userinput,cipherName,keyInput,functype,inputFile,outputFile);
 	}
-
+*/
 	return 0;
 }
 
-void AES_DES (string userinput,string cipherName,string keyInput,string functype,string inputFile,string outputFile)
+/*void AES_DES (string userinput,string cipherName,string keyInput,string functype,string inputFile,string outputFile)
 {
 	//DES cipher
 	if(cipherName == "DES")
 	{
 		
 
-		/* Create an instance of the DES cipher */	
+		/* Create an instance of the DES cipher 	
 		CipherInterface* cipher = new DES(); 
 			
-		/* Error checks */
+		/* Error checks 
 		if(!cipher)
 		{
 			fprintf(stderr, "ERROR [%s %s %d]: could not allocate memory\n",	
@@ -113,10 +254,10 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		* characters. Below is one example.
 		* Your program should take input from
 		* command line.
-		*/
+		
 		cipher->setKey((unsigned char*)keyInput.c_str());
 		
-		/* Perform encryption */
+		/* Perform encryption 
 		if(functype == "ENC")
 		{
 			//cout << userinput << endl;
@@ -127,7 +268,7 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		}
 		if(functype == "DEC")
 		{
-		/* Perform decryption */
+		/* Perform decryption 
 		const unsigned char* userinputTemp = reinterpret_cast<const unsigned char*>(userinput.c_str());
 		//cout << "user input " << endl;
 		//cout << userinput << endl;
@@ -149,7 +290,7 @@ void AES_DES (string userinput,string cipherName,string keyInput,string functype
 		// Create an instance of the AES cipher 	
 		CipherInterface* cipher = new AES(); 
 
-		/* Error checks */
+		/* Error checks 
 		if(!cipher)
 		{
 			fprintf(stderr, "ERROR [%s %s %d]: could not allocate memory\n",	
@@ -207,4 +348,4 @@ static void appendLineToFile(string outputfile, string output)
 		file << output;
 		file.close();
 	
-}
+}*/

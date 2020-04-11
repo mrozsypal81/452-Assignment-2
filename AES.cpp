@@ -37,71 +37,56 @@ bool AES::setKey(const unsigned char* keyArray)
 	/* The AES key index */
 	int AESKeyIndex = 0;
 
+	// The exit code
+	bool retVal = true;
+
 
 	// This is to account for the encryption 00 that is added before in cipher.cpp
 	int s = strlen((char*)keyArray);
 	//cout << "array length" << endl;
 	//cout << s << endl;
-
-	if (s == 34){
-			/* Go through the entire key character by character */
-		//cout << "Going into chartohex func enc" << endl;
-		while(AESKeyIndex != 16)
-		{
-			/* Convert the key if the character is valid */
-			if((this->AES_key[AESKeyIndex] = twoCharToHexByte(keyArray + keyIndex+2)) == 'z'){
-				cout << "key value is false" << endl;
-				return false;
-			}
-			/* Go to the second pair of characters */
-			keyIndex += 2;	
-			
-			/* Increment the index */
-			++AESKeyIndex;
-		}
-	}
-	else{
-		/* Go through the entire key character by character */
-		//cout << "Going into chartohex func dec" << endl;
-		while(AESKeyIndex != 16)
-		{
-			/* Convert the key if the character is valid */
-			if((this->AES_key[AESKeyIndex] = twoCharToHexByte(keyArray + keyIndex)) == 'z'){
-				cout << "key value is false" << endl;
-				return false;
-			}
-			/* Go to the second pair of characters */
-			keyIndex += 2;	
-			
-			/* Increment the index */
-			++AESKeyIndex;
-		}
+	
+	// Get the flag for encryption and decryption
+	char type = keyArray[0];
+	
+	// Iterate the key starting from the first element skipping
+	// two bytes at time
+	for(int keyIndex = 1; keyIndex < 32; keyIndex += 2)
+	{
+		// Convert the two bytes into one byte
+		this->AES_key[AESKeyIndex] = twoCharToHexByte(keyArray + keyIndex);
+		
+		++AESKeyIndex;
 	}
 	
 
 	//cout << "This->AES_key" << endl;
 	//cout << keyArray << endl;
-	if(s == 34)
+	
+	// Set the key for encryption
+	if(type == '0')
 	{	
+		fprintf(stderr, "Setting encryption key!\n");
 		//cout << "setting Encryption key" << endl;
 		if(AES_set_encrypt_key(this->AES_key, 128, &this->enc_key)!=0)
 		{
 			cout << "Fail to set Encryption key";
-			return false;
+			retVal = false;
 		}
 	}
 	else
 	{
+		fprintf(stderr, "Setting decryption key!\n");
 		//cout << "setting decryption key" << endl;
 		
 		if(AES_set_decrypt_key(this->AES_key, 128, &this->dec_key) != 0)
 		{
 			cout << "Fail to set Decryption key";
-			return false;
+			retVal = false;
 		}
 	}
 	
-	return true;
+	return retVal;
 	
 }
 

@@ -4,8 +4,9 @@ A form of implementation of DES and AES
 Members:
 
 Jin Nguyen, jwin@csu.fullerton.edu
-Ethan Letrong letronge@csu.fullerton.edu
-Lily Tran derpyhooves@csu.fullerton.edu
+Ethan Letrong, letronge@csu.fullerton.edu
+Lily Tran, derpyhooves@csu.fullerton.edu
+Jacqueline Kubiak, jkubs@csu.fullerton.edu
 Michael Rozsypal, mrozsypal@csu.fullerton.edu
 
 Language used:

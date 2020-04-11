@@ -39,13 +39,13 @@ bool AES::setKey(const unsigned char* keyArray)
 		
 	/* Go through the entire key character by character */
 	cout << "Going into chartohex func" << endl;
-	while(AESKeyIndex != 17)
+	while(AESKeyIndex != 16)
 	{
 		/* Convert the key if the character is valid */
-		if((this->AES_key[AESKeyIndex] = twoCharToHexByte(keyArray + keyIndex)) == 'z')
+		if((this->AES_key[AESKeyIndex] = twoCharToHexByte(keyArray + keyIndex)) == 'z'){
 			cout << "key value is false" << endl;
 			return false;
-		
+		}
 		/* Go to the second pair of characters */
 		keyIndex += 2;	
 		
@@ -142,7 +142,7 @@ unsigned char charToHex(const char& character)
 	/* Is the first digit 0-9 ? */	
 	if(character >= '0' && character <= '9'){	
 		/* Convert the character to hex */
-		cout << "conver the char to hex" << endl;
+		cout << "convert the char to hex" << endl;
 		return character - '0';
 	}
 	/* It the first digit a letter 'a' - 'f'? */
@@ -193,10 +193,10 @@ unsigned char twoCharToHexByte(const unsigned char* twoChars)
 	singleByte = (singleByte << 4);
 	
 	/* Conver the second character */
-	if((secondChar = charToHex(twoChars[1])) == 'z')
+	if((secondChar = charToHex(twoChars[1])) == 'z'){
 		cout << "convert second char" << endl;
 		return 'z'; 
-	
+	}
 	/* Insert the second value into the lower nibble */	
 	singleByte |= secondChar;
 

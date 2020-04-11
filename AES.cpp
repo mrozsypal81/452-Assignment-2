@@ -40,12 +40,12 @@ bool AES::setKey(const unsigned char* keyArray)
 
 	// This is to account for the encryption 00 that is added before in cipher.cpp
 	int s = strlen((char*)keyArray);
-	cout << "array length" << endl;
-	cout << s << endl;
+	//cout << "array length" << endl;
+	//cout << s << endl;
 
 	if (s == 34){
 			/* Go through the entire key character by character */
-		cout << "Going into chartohex func enc" << endl;
+		//cout << "Going into chartohex func enc" << endl;
 		while(AESKeyIndex != 16)
 		{
 			/* Convert the key if the character is valid */
@@ -62,7 +62,7 @@ bool AES::setKey(const unsigned char* keyArray)
 	}
 	else{
 		/* Go through the entire key character by character */
-		cout << "Going into chartohex func dec" << endl;
+		//cout << "Going into chartohex func dec" << endl;
 		while(AESKeyIndex != 16)
 		{
 			/* Convert the key if the character is valid */
@@ -79,11 +79,11 @@ bool AES::setKey(const unsigned char* keyArray)
 	}
 	
 
-	cout << "This->AES_key" << endl;
-	cout << keyArray << endl;
+	//cout << "This->AES_key" << endl;
+	//cout << keyArray << endl;
 	if(s == 34)
 	{	
-		cout << "setting Encryption key" << endl;
+		//cout << "setting Encryption key" << endl;
 		if(AES_set_encrypt_key(this->AES_key, 128, &this->enc_key)!=0)
 		{
 			cout << "Fail to set Encryption key";
@@ -92,7 +92,7 @@ bool AES::setKey(const unsigned char* keyArray)
 	}
 	else
 	{
-		cout << "setting decryption key" << endl;
+		//cout << "setting decryption key" << endl;
 		
 		if(AES_set_decrypt_key(this->AES_key, 128, &this->dec_key) != 0)
 		{
@@ -121,9 +121,9 @@ unsigned char* AES::encrypt(const unsigned char* plainText)
 
 	//	2. Use AES_ecb_encrypt(...) to encrypt the text (please see the URL in setKey(...)
 	//	and the aes.cpp example provided.
-		cout <<"Begin encryption" << endl;
+		//cout <<"Begin encryption" << endl;
 		AES_ecb_encrypt(plainText, ciphertext, &this->enc_key, AES_ENCRYPT);
-		cout <<"Successful encryption" << endl;
+		//cout <<"Successful encryption" << endl;
 		
 
 	// 	3. Return the pointer to the ciphertext
@@ -147,12 +147,12 @@ unsigned char* AES::decrypt(const unsigned char* cipherText)
 
 	//	2. Use AES_ecb_encrypt(...) to decrypt the text (please see the URL in setKey(...)
 	//	and the aes.cpp example provided.
-		cout <<"Begin decryption" << endl;
+		//cout <<"Begin decryption" << endl;
 		AES_ecb_encrypt(cipherText, plaintext, &this->dec_key, AES_DECRYPT);
-		cout <<"Successful decryption" << endl;
+		//cout <<"Successful decryption" << endl;
 	// 	3. Return the pointer to the plaintext
-	cout << "plaintext" << endl;
-	cout << plaintext << endl;
+	//cout << "plaintext" << endl;
+	//cout << plaintext << endl;
 	return plaintext;
 }
 
@@ -224,6 +224,6 @@ unsigned char twoCharToHexByte(const unsigned char* twoChars)
 	}
 	/* Insert the second value into the lower nibble */	
 	singleByte |= secondChar;
-	cout << "returning the hex byte" << endl;
+	//cout << "returning the hex byte" << endl;
 	return singleByte;
 }
